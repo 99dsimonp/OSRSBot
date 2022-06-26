@@ -17,34 +17,34 @@
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
  * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES
+ * LOSS OF USE, DATA, OR PROFITS OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.client.plugins.opponentinfo;
+package net.runelite.client.plugins.opponentinfo
 
-import com.google.inject.Provides;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.EnumSet;
-import javax.inject.Inject;
-import lombok.AccessLevel;
-import lombok.Getter;
-import net.runelite.api.Actor;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.WorldType;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.InteractingChanged;
-import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.plugins.Plugin;
-import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.ui.overlay.OverlayManager;
-import net.runelite.http.api.hiscore.HiscoreEndpoint;
+import com.google.inject.Provides
+import java.time.Duration
+import java.time.Instant
+import java.util.EnumSet
+import javax.inject.Inject
+import lombok.AccessLevel
+import lombok.Getter
+import net.runelite.api.Actor
+import net.runelite.api.Client
+import net.runelite.api.GameState
+import net.runelite.api.WorldType
+import net.runelite.api.events.GameStateChanged
+import net.runelite.api.events.GameTick
+import net.runelite.api.events.InteractingChanged
+import net.runelite.client.config.ConfigManager
+import net.runelite.client.eventbus.Subscribe
+import net.runelite.client.plugins.Plugin
+import net.runelite.client.plugins.PluginDescriptor
+import net.runelite.client.ui.overlay.OverlayManager
+import net.runelite.http.api.hiscore.HiscoreEndpoint
 
 @PluginDescriptor(
 	name = "Opponent Information",
@@ -53,51 +53,51 @@ import net.runelite.http.api.hiscore.HiscoreEndpoint;
 )
 public class OpponentInfoPlugin extends Plugin
 {
-	private static final Duration WAIT = Duration.ofSeconds(1);
+	private static final Duration WAIT = Duration.ofSeconds(1)
 
 	@Inject
-	private Client client;
+	private Client client
 
 	@Inject
-	private OpponentInfoConfig config;
+	private OpponentInfoConfig config
 
 	@Inject
-	private OverlayManager overlayManager;
+	private OverlayManager overlayManager
 
 	@Inject
-	private OpponentInfoOverlay opponentInfoOverlay;
+	private OpponentInfoOverlay opponentInfoOverlay
 
 	@Inject
-	private PlayerComparisonOverlay playerComparisonOverlay;
+	private PlayerComparisonOverlay playerComparisonOverlay
 
 	@Getter(AccessLevel.PACKAGE)
-	private HiscoreEndpoint hiscoreEndpoint = HiscoreEndpoint.NORMAL;
+	private HiscoreEndpoint hiscoreEndpoint = HiscoreEndpoint.NORMAL
 
 	@Getter(AccessLevel.PACKAGE)
-	private Actor lastOpponent;
+	private Actor lastOpponent
 
-	private Instant lastTime;
+	private Instant lastTime
 
 	@Provides
 	OpponentInfoConfig provideConfig(ConfigManager configManager)
 	{
-		return configManager.getConfig(OpponentInfoConfig.class);
+		return configManager.getConfig(OpponentInfoConfig.class)
 	}
 
 	@Override
 	protected void startUp() throws Exception
 	{
-		overlayManager.add(opponentInfoOverlay);
-		overlayManager.add(playerComparisonOverlay);
+		overlayManager.add(opponentInfoOverlay)
+		overlayManager.add(playerComparisonOverlay)
 	}
 
 	@Override
 	protected void shutDown() throws Exception
 	{
-		lastOpponent = null;
-		lastTime = null;
-		overlayManager.remove(opponentInfoOverlay);
-		overlayManager.remove(playerComparisonOverlay);
+		lastOpponent = null
+		lastTime = null
+		overlayManager.remove(opponentInfoOverlay)
+		overlayManager.remove(playerComparisonOverlay)
 	}
 
 	@Subscribe
@@ -105,25 +105,25 @@ public class OpponentInfoPlugin extends Plugin
 	{
 		if (gameStateChanged.getGameState() != GameState.LOGGED_IN)
 		{
-			return;
+			return
 		}
 
-		final EnumSet<WorldType> worldType = client.getWorldType();
+		final EnumSet<WorldType> worldType = client.getWorldType()
 		if (worldType.contains(WorldType.DEADMAN_TOURNAMENT))
 		{
-			hiscoreEndpoint = HiscoreEndpoint.DEADMAN_TOURNAMENT;
+			hiscoreEndpoint = HiscoreEndpoint.DEADMAN_TOURNAMENT
 		}
 		else if (worldType.contains(WorldType.SEASONAL_DEADMAN))
 		{
-			hiscoreEndpoint = HiscoreEndpoint.SEASONAL_DEADMAN;
+			hiscoreEndpoint = HiscoreEndpoint.SEASONAL_DEADMAN
 		}
 		else if (worldType.contains(WorldType.DEADMAN))
 		{
-			hiscoreEndpoint = HiscoreEndpoint.DEADMAN;
+			hiscoreEndpoint = HiscoreEndpoint.DEADMAN
 		}
 		else
 		{
-			hiscoreEndpoint = HiscoreEndpoint.NORMAL;
+			hiscoreEndpoint = HiscoreEndpoint.NORMAL
 		}
 	}
 
@@ -132,18 +132,18 @@ public class OpponentInfoPlugin extends Plugin
 	{
 		if (event.getSource() != client.getLocalPlayer())
 		{
-			return;
+			return
 		}
 
-		Actor opponent = event.getTarget();
+		Actor opponent = event.getTarget()
 
 		if (opponent == null)
 		{
-			lastTime = Instant.now();
-			return;
+			lastTime = Instant.now()
+			return
 		}
 
-		lastOpponent = opponent;
+		lastOpponent = opponent
 	}
 
 	@Subscribe
@@ -155,7 +155,7 @@ public class OpponentInfoPlugin extends Plugin
 		{
 			if (Duration.between(lastTime, Instant.now()).compareTo(WAIT) > 0)
 			{
-				lastOpponent = null;
+				lastOpponent = null
 			}
 		}
 	}

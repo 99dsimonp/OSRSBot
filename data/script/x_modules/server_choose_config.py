@@ -2,7 +2,7 @@ class server_choose_config():
 
     SPECIAL_OBJECT = [
         ".\\resources\\interface\\login\\button\\choose_server.png",
-    ];
+    ]
 
     SPECIAL_INDEX = ['301', '302', '303', '304', '305', '306', '307', '308', '309', '310', '311', '312', '313', '314',
                      '315', '316', '317', '318', '319', '320', '321', '322', '323', '324', '325', '326', '327', '328',
@@ -198,4 +198,4 @@ class server_choose_config():
         ".\\resources\\interface\\modules\\server_choose\\server\\523.png",
         ".\\resources\\interface\\modules\\server_choose\\server\\524.png",
         ".\\resources\\interface\\modules\\server_choose\\server\\525.png",
-    ];
+    ]
